@@ -1,27 +1,16 @@
 # =====================================================
 # CONNECTION.PY
-# Conexión PostgreSQL
+# PostgreSQL Connection
 # =====================================================
-
-import os
-import streamlit as st
 
 from sqlalchemy import create_engine
 
-
-# =====================================================
-# DATABASE URL
-# =====================================================
-
-DATABASE_URL = st.secrets.get(
-    "DATABASE_URL",
-    os.getenv("DATABASE_URL")
+DATABASE_URL = (
+    "postgresql+psycopg2://"
+    "admin:TU_PASSWORD@"
+    "dpg-d89ka3rbc2fs73fan5vg-a.oregon-postgres.render.com/"
+    "imc_pro_db"
 )
-
-
-# =====================================================
-# ENGINE
-# =====================================================
 
 engine = create_engine(
     DATABASE_URL,
