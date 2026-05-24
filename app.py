@@ -1,18 +1,19 @@
-# =========================================================
+# =====================================================
 # IMC PRO - APP.PY
-# Streamlit + PostgreSQL + Arquitectura Modular
-# =========================================================
+# Estructura modular profesional
+# =====================================================
 
 import streamlit as st
-import pandas as pd
 import plotly.express as px
 
 from database.models import crear_tablas
+from database.auth import registrar_usuario, login_usuario
 from database.queries import guardar_imc, obtener_datos
 
-# =========================================================
-# CONFIG
-# =========================================================
+
+# =====================================================
+# CONFIGURACIÓN
+# =====================================================
 
 st.set_page_config(
     page_title="IMC PRO",
@@ -20,28 +21,35 @@ st.set_page_config(
     layout="wide"
 )
 
-# =========================================================
+
+# =====================================================
 # CSS
-# =========================================================
+# =====================================================
 
 def cargar_css():
     try:
         with open("style.css", "r", encoding="utf-8") as f:
-            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+            st.markdown(
+                f"<style>{f.read()}</style>",
+                unsafe_allow_html=True
+            )
     except FileNotFoundError:
         pass
 
+
 cargar_css()
 
-# =========================================================
+
+# =====================================================
 # BASE DE DATOS
-# =========================================================
+# =====================================================
 
 crear_tablas()
 
-# =========================================================
-# FUNCIONES
-# =========================================================
+
+# =====================================================
+# FUNCIONES IMC
+# =====================================================
 
 def calcular_imc(peso, talla_cm):
     talla_m = talla_cm / 100
@@ -59,22 +67,23 @@ def diagnostico_imc(imc):
         return "Obesidad I"
     elif imc < 40:
         return "Obesidad II"
-    else:
-        return "Obesidad III"
+    return "Obesidad III"
 
-# =========================================================
-# SESSION
-# =========================================================
+
+# =====================================================
+# SESSION STATE
+# =====================================================
 
 if "login" not in st.session_state:
     st.session_state.login = False
 
 if "usuario" not in st.session_state:
-    st.session_state.usuario = "admin"
+    st.session_state.usuario = ""
 
-# =========================================================
+
+# =====================================================
 # LOGIN
-# =========================================================
+# =====================================================
 
 def pantalla_login():
     col1, col2, col3 = st.columns([1.2, 1, 1.2])
@@ -87,20 +96,47 @@ def pantalla_login():
         </div>
         """, unsafe_allow_html=True)
 
-        usuario = st.text_input("Usuario")
-        password = st.text_input("Contraseña", type="password")
+        tab1, tab2 = st.tabs(["Ingresar", "Registrarse"])
 
-        if st.button("Ingresar"):
-            if usuario == "admin" and password == "1234":
-                st.session_state.login = True
-                st.session_state.usuario = usuario
-                st.rerun()
-            else:
-                st.error("Usuario o contraseña incorrectos.")
+        with tab1:
+            usuario = st.text_input("Usuario", key="login_usuario")
+            password = st.text_input(
+                "Contraseña",
+                type="password",
+                key="login_password"
+            )
 
-# =========================================================
-# DASHBOARD
-# =========================================================
+            if st.button("Ingresar"):
+                if login_usuario(usuario, password):
+                    st.session_state.login = True
+                    st.session_state.usuario = usuario
+                    st.rerun()
+                else:
+                    st.error("Usuario o contraseña incorrectos.")
+
+        with tab2:
+            nuevo_usuario = st.text_input("Nuevo usuario", key="nuevo_usuario")
+            nueva_password = st.text_input(
+                "Nueva contraseña",
+                type="password",
+                key="nueva_password"
+            )
+
+            if st.button("Crear cuenta"):
+                ok, mensaje = registrar_usuario(
+                    nuevo_usuario,
+                    nueva_password
+                )
+
+                if ok:
+                    st.success(mensaje)
+                else:
+                    st.error(mensaje)
+
+
+# =====================================================
+# APLICACIÓN PRINCIPAL
+# =====================================================
 
 def dashboard():
     st.sidebar.title("⚕️ IMC PRO")
@@ -108,11 +144,17 @@ def dashboard():
 
     menu = st.sidebar.radio(
         "Menú principal",
-        ["Registrar IMC", "Historial", "Estadísticas", "Exportar"]
+        [
+            "Registrar IMC",
+            "Historial",
+            "Estadísticas",
+            "Exportar"
+        ]
     )
 
     if st.sidebar.button("Cerrar sesión"):
         st.session_state.login = False
+        st.session_state.usuario = ""
         st.rerun()
 
     if menu == "Registrar IMC":
@@ -122,19 +164,37 @@ def dashboard():
 
         with col1:
             nombre = st.text_input("Nombres y apellidos")
-            edad = st.number_input("Edad", min_value=1, max_value=120, value=10)
-            sexo = st.selectbox("Sexo", ["Masculino", "Femenino"])
+            edad = st.number_input(
+                "Edad",
+                min_value=1,
+                max_value=120,
+                value=10
+            )
+            sexo = st.selectbox(
+                "Sexo",
+                ["Masculino", "Femenino"]
+            )
 
         with col2:
-            peso = st.number_input("Peso kg", min_value=1.0, max_value=300.0, value=60.0)
-            talla = st.number_input("Talla cm", min_value=50.0, max_value=250.0, value=160.0)
+            peso = st.number_input(
+                "Peso kg",
+                min_value=1.0,
+                max_value=300.0,
+                value=60.0
+            )
+            talla = st.number_input(
+                "Talla cm",
+                min_value=50.0,
+                max_value=250.0,
+                value=160.0
+            )
 
         if st.button("Calcular y guardar IMC"):
             if nombre.strip() == "":
                 st.warning("Ingrese el nombre completo.")
             else:
                 imc = calcular_imc(peso, talla)
-                dx = diagnostico_imc(imc)
+                diagnostico = diagnostico_imc(imc)
 
                 guardar_imc(
                     nombre=nombre,
@@ -143,14 +203,14 @@ def dashboard():
                     peso=peso,
                     talla=talla,
                     imc=imc,
-                    diagnostico=dx
+                    diagnostico=diagnostico
                 )
 
                 st.success("Evaluación IMC guardada correctamente.")
 
                 c1, c2 = st.columns(2)
                 c1.metric("IMC", imc)
-                c2.metric("Diagnóstico", dx)
+                c2.metric("Diagnóstico", diagnostico)
 
     elif menu == "Historial":
         st.title("📚 Historial de Evaluaciones IMC")
@@ -220,15 +280,12 @@ def dashboard():
 
             st.dataframe(df, use_container_width=True)
 
-# =========================================================
+
+# =====================================================
 # MAIN
-# =========================================================
+# =====================================================
 
 if st.session_state.login:
     dashboard()
 else:
     pantalla_login()
-
-
-
-

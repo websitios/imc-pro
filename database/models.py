@@ -1,12 +1,37 @@
-# =========================================================
-# MODELOS / TABLAS
-# =========================================================
+# =====================================================
+# MODELS.PY
+# Creación de tablas PostgreSQL para IMC PRO
+# =====================================================
 
 from sqlalchemy import text
 from database.connection import engine
 
+
+# =====================================================
+# CREAR TABLAS
+# =====================================================
+
 def crear_tablas():
     with engine.begin() as conn:
+
+        # =================================================
+        # TABLA USUARIOS
+        # =================================================
+
+        conn.execute(text("""
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id SERIAL PRIMARY KEY,
+            usuario VARCHAR(100) UNIQUE NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            rol VARCHAR(50) DEFAULT 'usuario',
+            fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """))
+
+        # =================================================
+        # TABLA EVALUACIONES IMC
+        # =================================================
+
         conn.execute(text("""
         CREATE TABLE IF NOT EXISTS evaluaciones_imc (
             id SERIAL PRIMARY KEY,
