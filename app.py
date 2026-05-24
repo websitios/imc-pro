@@ -1,6 +1,18 @@
+# =========================================================
+# IMC PRO - APP.PY
+# Streamlit + PostgreSQL + Arquitectura Modular
+# =========================================================
+
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+import plotly.express as px
+
+from database.models import crear_tablas
+from database.queries import guardar_imc, obtener_datos
+
+# =========================================================
+# CONFIG
+# =========================================================
 
 st.set_page_config(
     page_title="IMC PRO",
@@ -8,44 +20,33 @@ st.set_page_config(
     layout="wide"
 )
 
-st.markdown("""
-<style>
-.stApp {
-    background: linear-gradient(135deg,#020617,#0f172a,#1e3a8a);
-    color: white;
-}
-.main-title {
-    text-align:center;
-    color:#38bdf8;
-    font-size:42px;
-    font-weight:900;
-}
-.card {
-    background:#0f172a;
-    padding:25px;
-    border-radius:20px;
-    border:1px solid rgba(56,189,248,.3);
-}
-.stButton button {
-    width:100%;
-    background:linear-gradient(90deg,#2563eb,#06b6d4);
-    color:white;
-    border:none;
-    border-radius:12px;
-    height:48px;
-    font-weight:900;
-}
-[data-testid="stMetric"] {
-    background:#111827;
-    padding:18px;
-    border-radius:16px;
-    border:1px solid rgba(56,189,248,.25);
-}
-</style>
-""", unsafe_allow_html=True)
+# =========================================================
+# CSS
+# =========================================================
 
-if "registros" not in st.session_state:
-    st.session_state.registros = []
+def cargar_css():
+    try:
+        with open("style.css", "r", encoding="utf-8") as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    except FileNotFoundError:
+        pass
+
+cargar_css()
+
+# =========================================================
+# BASE DE DATOS
+# =========================================================
+
+crear_tablas()
+
+# =========================================================
+# FUNCIONES
+# =========================================================
+
+def calcular_imc(peso, talla_cm):
+    talla_m = talla_cm / 100
+    return round(peso / (talla_m ** 2), 2)
+
 
 def diagnostico_imc(imc):
     if imc < 18.5:
@@ -55,87 +56,179 @@ def diagnostico_imc(imc):
     elif imc < 30:
         return "Sobrepeso"
     elif imc < 35:
-        return "Obesidad grado I"
+        return "Obesidad I"
     elif imc < 40:
-        return "Obesidad grado II"
+        return "Obesidad II"
     else:
-        return "Obesidad grado III"
+        return "Obesidad III"
 
-st.markdown('<div class="main-title">⚕️ IMC PRO</div>', unsafe_allow_html=True)
-st.markdown("<h4 style='text-align:center;color:#cbd5e1;'>Sistema profesional para cálculo de Índice de Masa Corporal</h4>", unsafe_allow_html=True)
+# =========================================================
+# SESSION
+# =========================================================
 
-menu = st.sidebar.radio(
-    "Menú principal",
-    ["Calcular IMC", "Historial", "Exportar"]
-)
+if "login" not in st.session_state:
+    st.session_state.login = False
 
-if menu == "Calcular IMC":
-    st.header("Registro del paciente / estudiante")
+if "usuario" not in st.session_state:
+    st.session_state.usuario = "admin"
 
-    col1, col2, col3 = st.columns(3)
+# =========================================================
+# LOGIN
+# =========================================================
 
-    with col1:
-        nombre = st.text_input("Nombres y apellidos")
-        edad = st.number_input("Edad", min_value=1, max_value=120, value=10)
+def pantalla_login():
+    col1, col2, col3 = st.columns([1.2, 1, 1.2])
 
     with col2:
-        sexo = st.selectbox("Sexo", ["Masculino", "Femenino"])
-        peso = st.number_input("Peso kg", min_value=0.0, max_value=300.0, value=0.0)
+        st.markdown("""
+        <div class="login-card">
+            <h1>⚕️ IMC <span>PRO</span></h1>
+            <p>Sistema profesional para evaluación del Índice de Masa Corporal.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-    with col3:
-        talla = st.number_input("Talla cm", min_value=0.0, max_value=250.0, value=0.0)
-        fecha = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        usuario = st.text_input("Usuario")
+        password = st.text_input("Contraseña", type="password")
 
-    if st.button("Calcular IMC"):
-        if peso <= 0 or talla <= 0 or nombre.strip() == "":
-            st.warning("Complete nombre, peso y talla correctamente.")
+        if st.button("Ingresar"):
+            if usuario == "admin" and password == "1234":
+                st.session_state.login = True
+                st.session_state.usuario = usuario
+                st.rerun()
+            else:
+                st.error("Usuario o contraseña incorrectos.")
+
+# =========================================================
+# DASHBOARD
+# =========================================================
+
+def dashboard():
+    st.sidebar.title("⚕️ IMC PRO")
+    st.sidebar.success(f"Usuario: {st.session_state.usuario}")
+
+    menu = st.sidebar.radio(
+        "Menú principal",
+        ["Registrar IMC", "Historial", "Estadísticas", "Exportar"]
+    )
+
+    if st.sidebar.button("Cerrar sesión"):
+        st.session_state.login = False
+        st.rerun()
+
+    if menu == "Registrar IMC":
+        st.title("📋 Registro de Evaluación IMC")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            nombre = st.text_input("Nombres y apellidos")
+            edad = st.number_input("Edad", min_value=1, max_value=120, value=10)
+            sexo = st.selectbox("Sexo", ["Masculino", "Femenino"])
+
+        with col2:
+            peso = st.number_input("Peso kg", min_value=1.0, max_value=300.0, value=60.0)
+            talla = st.number_input("Talla cm", min_value=50.0, max_value=250.0, value=160.0)
+
+        if st.button("Calcular y guardar IMC"):
+            if nombre.strip() == "":
+                st.warning("Ingrese el nombre completo.")
+            else:
+                imc = calcular_imc(peso, talla)
+                dx = diagnostico_imc(imc)
+
+                guardar_imc(
+                    nombre=nombre,
+                    edad=edad,
+                    sexo=sexo,
+                    peso=peso,
+                    talla=talla,
+                    imc=imc,
+                    diagnostico=dx
+                )
+
+                st.success("Evaluación IMC guardada correctamente.")
+
+                c1, c2 = st.columns(2)
+                c1.metric("IMC", imc)
+                c2.metric("Diagnóstico", dx)
+
+    elif menu == "Historial":
+        st.title("📚 Historial de Evaluaciones IMC")
+
+        df = obtener_datos()
+
+        if df.empty:
+            st.info("Aún no existen registros.")
         else:
-            talla_m = talla / 100
-            imc = peso / (talla_m ** 2)
-            dx = diagnostico_imc(imc)
+            st.dataframe(df, use_container_width=True)
 
-            st.success("Cálculo realizado correctamente")
+    elif menu == "Estadísticas":
+        st.title("📊 Estadísticas IMC")
 
-            c1, c2 = st.columns(2)
-            c1.metric("IMC", f"{imc:.2f}")
-            c2.metric("Diagnóstico", dx)
+        df = obtener_datos()
 
-            st.session_state.registros.append({
-                "fecha": fecha,
-                "nombre": nombre,
-                "edad": edad,
-                "sexo": sexo,
-                "peso_kg": peso,
-                "talla_cm": talla,
-                "imc": round(imc, 2),
-                "diagnostico": dx
-            })
+        if df.empty:
+            st.warning("No existen datos para graficar.")
+        else:
+            c1, c2, c3 = st.columns(3)
 
-elif menu == "Historial":
-    st.header("Historial de registros")
+            c1.metric("Total registros", len(df))
+            c2.metric("IMC promedio", round(df["imc"].mean(), 2))
+            c3.metric("Edad promedio", round(df["edad"].mean(), 2))
 
-    df = pd.DataFrame(st.session_state.registros)
+            fig1 = px.histogram(
+                df,
+                x="imc",
+                color="sexo",
+                title="Distribución del IMC por sexo"
+            )
+            st.plotly_chart(fig1, use_container_width=True)
 
-    if df.empty:
-        st.info("Aún no hay registros.")
-    else:
-        st.dataframe(df, use_container_width=True)
+            fig2 = px.pie(
+                df,
+                names="diagnostico",
+                title="Distribución por diagnóstico nutricional"
+            )
+            st.plotly_chart(fig2, use_container_width=True)
 
-elif menu == "Exportar":
-    st.header("Exportar datos")
+            fig3 = px.scatter(
+                df,
+                x="peso",
+                y="imc",
+                color="sexo",
+                size="edad",
+                title="Relación entre peso e IMC"
+            )
+            st.plotly_chart(fig3, use_container_width=True)
 
-    df = pd.DataFrame(st.session_state.registros)
+    elif menu == "Exportar":
+        st.title("📥 Exportar Datos")
 
-    if df.empty:
-        st.info("No hay datos para exportar.")
-    else:
-        csv = df.to_csv(index=False).encode("utf-8-sig")
+        df = obtener_datos()
 
-        st.download_button(
-            "Descargar CSV",
-            data=csv,
-            file_name="imc_pro.csv",
-            mime="text/csv"
-        )
+        if df.empty:
+            st.info("No hay datos para exportar.")
+        else:
+            csv = df.to_csv(index=False).encode("utf-8-sig")
 
-        st.dataframe(df, use_container_width=True)
+            st.download_button(
+                label="Descargar CSV",
+                data=csv,
+                file_name="imc_pro_registros.csv",
+                mime="text/csv"
+            )
+
+            st.dataframe(df, use_container_width=True)
+
+# =========================================================
+# MAIN
+# =========================================================
+
+if st.session_state.login:
+    dashboard()
+else:
+    pantalla_login()
+
+
+
+
