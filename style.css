@@ -1,57 +1,51 @@
 /* ==========================================================================
-   1. CONFIGURACIÓN E INMERSIÓN GLOBAL (RESETEO DE STREAMLIT)
+   1. VARIABLES DE COLOR Y FUENTES (ESTILO NEOMÓRFICO MODERNO)
    ========================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* Forzar el fondo fluido de ondas líquidas (Azul, crema y oro) en toda la app */
 .stApp {
-    background-color: #0b1d3a !important;
+    /* Gradiente de fondo más sutil para el fondo líquido (Liquid Gradient) */
+    background-color: #0c1d3c !important;
     background-image:
-        radial-gradient(at 85% 15%, rgba(254, 240, 138, 0.45) 0px, transparent 45%),
-        radial-gradient(at 95% 65%, rgba(147, 197, 253, 0.5) 0px, transparent 50%),
-        radial-gradient(at 55% 40%, rgba(30, 58, 138, 0.8) 0px, transparent 60%),
-        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.4) 0px, transparent 40%),
+        radial-gradient(at 80% 20%, rgba(254, 240, 138, 0.4) 0px, transparent 40%),
+        radial-gradient(at 0% 100%, rgba(29, 78, 216, 0.4) 0px, transparent 40%),
         linear-gradient(135deg, #070f22 0%, #1e3a8a 100%) !important;
-    background-attachment: fixed !important;
+    color: #f8fafc !important;
     font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
 }
 
-/* Ocultar elementos superiores e inferiores nativos que rompen el diseño limpio */
+/* Ocultar elementos superiores de Streamlit para inmersión total */
 header[data-testid="stHeader"],
-footer,
-div[data-testid="stDecoration"] {
+footer {
     visibility: hidden !important;
     display: none !important;
 }
 
-/* Ajustar los contenedores de bloques internos para permitir centrado vertical */
-div[data-testid="stVerticalBlock"] {
-    gap: 0px !important;
-}
-
 /* ==========================================================================
-   2. TARJETA DE LOGIN (REPLICA FIEL IZQUIERDA DE LA IMAGEN)
+   2. CONTENEDOR SPLIT DE LOGIN (ESTILO "CARD FLOAT")
    ========================================================================== */
+/* Tarjeta Blanca Minimalista de la izquierda con sombras suaves */
 .login-card {
-    background: #ffffff !important;
+    background: rgba(255, 255, 255, 0.98) !important;
     padding: 40px 45px 25px 45px;
     border-radius: 24px !important;
-    box-shadow: 0 30px 70px -10px rgba(7, 15, 34, 0.55) !important;
+    box-shadow: 0 30px 60px -15px rgba(7, 15, 34, 0.45) !important;
     text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.95);
-    margin-top: 25px;
+    margin-top: 35px;
+    margin-bottom: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.9);
 }
 
-/* Avatar e ícono circular superior de la tarjeta */
+/* Ícono de Usuario superior (Avatar circular neomórfico) */
 .login-card::before {
     content: "👤";
     font-size: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 76px;
-    height: 76px;
-    background-color: #f8fafc;
+    width: 72px;
+    height: 72px;
+    background-color: #f1f5f9;
     color: #1e3a8a;
     border-radius: 50%;
     margin: 0 auto 22px auto;
@@ -61,22 +55,21 @@ div[data-testid="stVerticalBlock"] {
 
 .login-card h1 {
     font-size: 26px !important;
-    font-weight: 900 !important;
-    letter-spacing: -0.05em !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.04em !important;
     color: #0f172a !important;
-    margin: 0px 0px 4px 0px !important;
+    margin: 0px 0px 5px 0px !important;
     padding: 0px !important;
 }
 
 .login-card p {
     color: #64748b !important;
-    font-size: 13.5px !important;
+    font-size: 13px !important;
     font-weight: 400 !important;
     margin: 0px 0px 15px 0px !important;
-    line-height: 1.4 !important;
 }
 
-/* Títulos decorativos de los formularios internos */
+/* Títulos de sección internos */
 h1,
 h2,
 h3 {
@@ -88,12 +81,12 @@ h3 {
 /* ==========================================================================
    3. CAMPOS DE ENTRADA (ESTILO "PÍLDORA" OVALADA)
    ========================================================================== */
-/* Forzar diseño elíptico en cajas de texto de usuario y contraseña */
+/* Cajas de texto con bordes completamente elípticos y fondo blanco */
 .stTextInput input,
 .stNumberInput input,
 div[data-baseweb="select"] {
     border-radius: 50px !important;
-    /* Bordes ovalados perfectos */
+    /* Totalmente ovalado */
     height: 48px !important;
     background-color: #ffffff !important;
     color: #0f172a !important;
@@ -103,7 +96,7 @@ div[data-baseweb="select"] {
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-/* Interacción al seleccionar o escribir en un campo (Focus) */
+/* Efecto Focus para campos activos */
 .stTextInput input:focus,
 .stNumberInput input:focus {
     border-color: #1e3a8a !important;
@@ -111,29 +104,31 @@ div[data-baseweb="select"] {
     background-color: #f8fafc !important;
 }
 
-/* Ajuste sutil de las etiquetas de texto de Streamlit */
+/* Etiquetas de formulario */
+label aria-label,
+.stForm label,
 div[data-testid="stWidgetLabel"] p {
     color: #475569 !important;
     font-weight: 600 !important;
     font-size: 13px !important;
     margin-left: 14px !important;
-    margin-bottom: 4px !important;
+    margin-bottom: 5px !important;
 }
 
 /* ==========================================================================
-   4. SISTEMA DE BOTONES (SÓLIDOS Y ENLACES)
+   4. SISTEMA DE BOTONES (PRIMARY, DOWNLOAD Y ENLACES)
    ========================================================================== */
-/* Botón de Acción Principal (El "LOGIN" de la imagen) */
+/* Botón de Acción Principal (El "INGRESAR AL SISTEMA" sólido y ovalado) */
 .stButton button {
     background: #1e3a8a !important;
     color: #ffffff !important;
     border: none !important;
     border-radius: 50px !important;
-    /* Estilo píldora */
+    /* Estilo píldora ovalada */
     font-weight: 700 !important;
     font-size: 14px !important;
-    letter-spacing: 0.06em !important;
-    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase;
     /* Todo en mayúsculas */
     height: 48px !important;
     cursor: pointer !important;
@@ -142,17 +137,17 @@ div[data-testid="stWidgetLabel"] p {
 }
 
 .stButton button:hover {
-    background: #0f172a !important;
+    background: #111827 !important;
     /* Cambia a tono oscuro */
     transform: translateY(-1px) !important;
-    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.35) !important;
+    box-shadow: 0 6px 18px rgba(17, 24, 39, 0.3) !important;
 }
 
 .stButton button:active {
     transform: translateY(1px) !important;
 }
 
-/* Enlaces secundarios (Simulación del "Sign up now" / "¿No tienes cuenta?") */
+/* Enlaces secundarios (Ej. Crear cuenta / Volver) en azul sutil */
 button[key^="btn_ir_"] {
     background: transparent !important;
     color: #1e3a8a !important;
@@ -163,7 +158,6 @@ button[key^="btn_ir_"] {
     box-shadow: none !important;
     height: auto !important;
     padding: 0px !important;
-    text-transform: none !important;
 }
 
 button[key^="btn_ir_"]:hover {
@@ -174,39 +168,27 @@ button[key^="btn_ir_"]:hover {
 }
 
 /* ==========================================================================
-   5. DISEÑO DEL DASHBOARD INTERNO (POST-LOGIN)
+   5. SOPORTE DE COMPONENTES DE TRABAJO INTERNO (DASHBOARD)
    ========================================================================== */
-/* Cuando el docente accede, los componentes se adaptan para mantener legibilidad clara */
+/* Cuando el docente accede, los componentes se adaptan para mantener legibilidad */
 section[data-testid="stSidebar"] {
     background-color: #0c1527 !important;
     border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
-section[data-testid="stSidebar"] h1,
-section[data-testid="stSidebar"] p,
-section[data-testid="stSidebar"] label {
-    color: #f8fafc !important;
-}
-
-/* Tarjetas de métricas claras y limpias para los promedios físicos */
 [data-testid="stMetric"] {
     background: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
     border-radius: 18px !important;
-    padding: 20px !important;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05) !important;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.03) !important;
 }
 
 [data-testid="stMetricLabel"] {
     color: #64748b !important;
-    font-weight: 600 !important;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
 }
 
 [data-testid="stMetricValue"] {
     color: #0f172a !important;
-    font-weight: 800 !important;
 }
 
 /* Contenedor de formularios de evaluaciones */
@@ -215,12 +197,4 @@ section[data-testid="stSidebar"] label {
     border-radius: 24px !important;
     border: 1px solid #e2e8f0 !important;
     padding: 35px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02) !important;
-}
-
-/* Dataframe e Historial de Resultados */
-div[data-testid="stDataFrame"] {
-    border-radius: 16px !important;
-    border: 1px solid #e2e8f0 !important;
-    background-color: #ffffff !important;
 }
