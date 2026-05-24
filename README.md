@@ -1,29 +1,57 @@
-# Capacidades Físicas PRO
+# ⚖️ IMC PRO
 
-Sistema profesional para evaluación de capacidades físicas.
+Sistema profesional para cálculo, evaluación y análisis del Índice de Masa Corporal (IMC).
 
-## Tecnologías
+---
 
-- Python
-- Streamlit
-- PostgreSQL
-- SQLAlchemy
-- Plotly
-- Pandas
-- Render
-- Streamlit Cloud
+# 📌 Descripción
 
-## Funciones
+**IMC PRO** es una plataforma web profesional desarrollada con Python y Streamlit para registrar, calcular y analizar el estado nutricional de estudiantes, deportistas y pacientes.
 
-- Login profesional
-- Registro de usuarios
-- Registro de evaluaciones
-- Dashboard estadístico
-- Exportación CSV
-- Base de datos cloud PostgreSQL
+El sistema permite gestionar evaluaciones corporales de manera moderna, rápida y segura utilizando una base de datos PostgreSQL en la nube.
 
-## Ejecutar localmente
+---
+
+# 🚀 Características
+
+✅ Login profesional institucional  
+✅ Registro de usuarios  
+✅ Cálculo automático de IMC  
+✅ Clasificación nutricional OMS  
+✅ Dashboard estadístico interactivo  
+✅ Historial de evaluaciones  
+✅ Exportación CSV y Excel  
+✅ Base de datos PostgreSQL Cloud  
+✅ Sistema de suscripción mensual y anual  
+✅ Demo gratuita por 15 días  
+✅ Diseño moderno responsive  
+
+---
+
+# 🖥️ Tecnologías Utilizadas
+
+| Tecnología | Función |
+|---|---|
+| Python | Lenguaje principal |
+| Streamlit | Interfaz web |
+| PostgreSQL | Base de datos profesional |
+| SQLAlchemy | ORM y conexión SQL |
+| Psycopg2 | Driver PostgreSQL |
+| Pandas | Procesamiento de datos |
+| Plotly | Estadísticas y gráficos |
+| OpenPyXL | Exportación Excel |
+| Stripe | Sistema de pagos |
+| GitHub | Versionado del proyecto |
+| Streamlit Cloud | Publicación web |
+
+---
+
+# 📂 Estructura del Proyecto
 
 ```bash
-pip install -r requirements.txt
-streamlit run app.py
+imc-pro/
+│
+├── app.py
+├── style.css
+├── requirements.txt
+└── README.md
