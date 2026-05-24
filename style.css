@@ -1,12 +1,12 @@
 /* ==========================================================================
-   1. FONDO GLOBAL FLUIDO (Inspirado en la imagen de referencia)
+   1. CONFIGURACIÓN BASE Y FONDO FLUIDO
    ========================================================================== */
 .stApp {
-    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 40%, #3b82f6 100%) !important;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 45%, #3b82f6 100%) !important;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
 }
 
-/* Ocultar elementos innecesarios de Streamlit para un acabado limpio */
+/* Eliminar barras de herramientas fijos y decoraciones nativas de Streamlit */
 #MainMenu,
 footer,
 header {
@@ -14,107 +14,130 @@ header {
 }
 
 /* ==========================================================================
-   2. TARJETA CONTENEDORA DE LOGIN (Glassmorphism)
+   2. TARJETA BLANCA PREMIUM (Fiel a la estructura de tu boceto)
    ========================================================================== */
-.login-container {
-    background: rgba(255, 255, 255, 0.06) !important;
-    backdrop-filter: blur(16px) saturate(120%) !important;
-    -webkit-backdrop-filter: blur(16px) saturate(120%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+.login-card-unified {
+    background-color: #ffffff !important;
     border-radius: 24px !important;
     padding: 40px 35px !important;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4) !important;
     text-align: center;
-    margin-top: 10vh;
+    margin: 8vh auto 0 auto;
+    max-width: 450px;
+    /* Evita que los inputs se estiren por toda la pantalla */
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
 }
 
-/* Encabezado del Sistema */
-.login-header h1 {
-    color: #ffffff !important;
-    font-size: 32px !important;
+/* Contenedor del Avatar/Icono Superior (Círculo Gris Suave) */
+.avatar-container {
+    background-color: #f1f5f9 !important;
+    width: 68px;
+    height: 68px;
+    border-radius: 50% !important;
+    margin: 0 auto 15px auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+/* Encabezados internos de la tarjeta */
+.login-card-unified h1 {
+    color: #0f172a !important;
+    font-size: 28px !important;
     font-weight: 800 !important;
     letter-spacing: -0.5px !important;
     margin-bottom: 4px !important;
 }
 
-.login-header h1 span {
-    color: #38bdf8 !important;
-}
-
-.login-header p {
-    color: #94a3b8 !important;
-    font-size: 14px !important;
+.login-card-unified p.subtitle {
+    color: #64748b !important;
+    font-size: 13px !important;
     margin-bottom: 25px !important;
+    font-weight: 400 !important;
 }
 
-/* ==========================================================================
-   3. ESTILIZADO DE INPUTS NATIVOS DE STREAMLIT (Dentro de la tarjeta)
-   ========================================================================== */
-/* Etiquetas de los inputs */
-.login-container label p {
-    color: #cbd5e1 !important;
-    font-weight: 500 !important;
-    font-size: 14px !important;
+/* Etiquetas encima de las cajas de texto (Nombre de Usuario / Contraseña) */
+.login-card-unified label p {
+    color: #334155 !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
     text-align: left !important;
-}
-
-/* Cajas de texto (Inputs) */
-.login-container div[data-testid="stTextInput"] input {
-    background-color: rgba(15, 23, 42, 0.6) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    border-radius: 12px !important;
-    color: #ffffff !important;
-    height: 46px !important;
-    font-size: 15px !important;
-    padding-left: 15px !important;
-    transition: all 0.3s ease !important;
-}
-
-.login-container div[data-testid="stTextInput"] input:focus {
-    border-color: #38bdf8 !important;
-    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25) !important;
+    margin-bottom: 6px !important;
 }
 
 /* ==========================================================================
-   4. BOTONES TIPO PÍLDORA ERGONÓMICOS
+   3. CAMPOS DE TEXTO (INPUTS) ESTILO PÍLDORA ERGONÓMICA
    ========================================================================== */
-/* Botón Principal (Ingresar) */
-.login-container div.stButton>button:first-child {
-    background: linear-gradient(90deg, #2563eb 0%, #1d4ed8 100%) !important;
+.login-card-unified div[data-testid="stTextInput"] input {
+    background-color: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 50px !important;
+    /* Bordes redondeados idénticos a la referencia */
+    color: #0f172a !important;
+    height: 48px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    font-size: 14.5px !important;
+    transition: all 0.25s ease-in-out !important;
+}
+
+/* Efecto al hacer clic o enfocarse en el input */
+.login-card-unified div[data-testid="stTextInput"] input:focus {
+    border-color: #2563eb !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15) !important;
+}
+
+/* Ajuste del botón nativo del ojo (Streamlit password visibility toggle) */
+.login-card-unified div[data-testid="stTextInput"] [data-testid="stTextInput-Adornment"] {
+    right: 12px !important;
+}
+
+/* ==========================================================================
+   4. BOTONES DEL SISTEMA
+   ========================================================================== */
+/* Botón Principal (INGRESAR AL SISTEMA) */
+.login-card-unified div.stButton>button:first-child {
+    background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%) !important;
     color: #ffffff !important;
     border: none !important;
     border-radius: 50px !important;
-    /* Estilo píldora perfecto */
     height: 48px !important;
-    font-size: 15px !important;
+    font-size: 14.5px !important;
     font-weight: 600 !important;
     letter-spacing: 0.5px !important;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
-    transition: all 0.25s ease !important;
-    margin-top: 10px !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25) !important;
+    transition: all 0.2s ease !important;
+    margin-top: 15px !important;
+    width: 100% !important;
 }
 
-.login-container div.stButton>button:first-child:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5) !important;
-    background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%) !important;
+.login-card-unified div.stButton>button:first-child:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4) !important;
+    background: linear-gradient(90deg, #1e40af 0%, #1d4ed8 100%) !important;
 }
 
-/* Botón Secundario (Crear Cuenta / Volver) */
-.login-container .btn-secundario div.stButton>button:first-child {
-    background: rgba(255, 255, 255, 0.05) !important;
-    color: #38bdf8 !important;
-    border: 1px solid rgba(56, 189, 248, 0.4) !important;
+.login-card-unified div.stButton>button:first-child:active {
+    transform: translateY(1px) !important;
+}
+
+/* Botón Secundario Envoltura (CREAR CUENTA NUEVA) */
+.login-card-unified .btn-secundario div.stButton>button:first-child {
+    background: #f1f5f9 !important;
+    color: #1e40af !important;
+    border: 1px solid #cbd5e1 !important;
     border-radius: 50px !important;
     height: 40px !important;
-    font-size: 13px !important;
-    font-weight: 500 !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
     box-shadow: none !important;
     margin-top: 5px !important;
 }
 
-.login-container .btn-secundario div.stButton>button:first-child:hover {
-    background: rgba(56, 189, 248, 0.1) !important;
-    color: #7dd3fc !important;
-    transform: none !important;
+.login-card-unified .btn-secundario div.stButton>button:first-child:hover {
+    background: #e2e8f0 !important;
+    color: #1d4ed8 !important;
+    border-color: #94a3b8 !important;
 }
