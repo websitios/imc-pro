@@ -1,8 +1,15 @@
+# =========================================================
+# CAPACIDADES FÍSICAS PRO
+# VERSIÓN PROFESIONAL FULL
+# Python + Streamlit + PostgreSQL + SQLAlchemy
+# =========================================================
+
 import streamlit as st
 import pandas as pd
-from sqlalchemy import create_engine, text
-from datetime import datetime, timedelta
 import plotly.express as px
+from sqlalchemy import create_engine, text
+from datetime import datetime
+import hashlib
 
 # =========================================================
 # CONFIG
@@ -10,11 +17,156 @@ import plotly.express as px
 
 st.set_page_config(
     page_title="Capacidades Físicas PRO",
+    page_icon="🏃",
     layout="wide"
 )
 
 # =========================================================
-# DATABASE
+# CSS PROFESIONAL
+# =========================================================
+
+st.markdown("""
+<style>
+
+html, body, [class*="css"]{
+    font-family: 'Segoe UI';
+}
+
+.stApp{
+    background: linear-gradient(135deg,#020617,#001845,#001233);
+    color:white;
+}
+
+/* ===== LOGIN ===== */
+
+.login-wrapper{
+    min-height:82vh;
+    display:grid;
+    grid-template-columns:1.1fr 1fr;
+    background:white;
+    border-radius:30px;
+    overflow:hidden;
+    box-shadow:0 25px 80px rgba(0,0,0,.45);
+    margin-top:20px;
+}
+
+.login-left{
+    background: linear-gradient(135deg,#2563eb,#1d4ed8,#38bdf8);
+    padding:70px;
+    color:white;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.login-left h1{
+    font-size:58px;
+    line-height:1.05;
+    font-weight:900;
+    color:white;
+}
+
+.login-left p{
+    color:#dbeafe;
+    font-size:18px;
+}
+
+.login-right{
+    padding:70px;
+    background:white;
+}
+
+.brand{
+    font-size:44px;
+    font-weight:900;
+    color:#111827;
+}
+
+.brand span{
+    color:#2563eb;
+}
+
+.subtitle{
+    color:#64748b;
+    margin-bottom:30px;
+}
+
+/* ===== INPUTS ===== */
+
+.stTextInput input{
+    height:52px;
+    border-radius:14px !important;
+}
+
+.stNumberInput input{
+    border-radius:14px !important;
+}
+
+/* ===== BOTONES ===== */
+
+.stButton button{
+    width:100%;
+    height:52px;
+    border-radius:14px;
+    border:none;
+    background:linear-gradient(90deg,#2563eb,#1d4ed8);
+    color:white;
+    font-weight:800;
+}
+
+/* ===== SIDEBAR ===== */
+
+section[data-testid="stSidebar"]{
+    background:#020617;
+}
+
+/* ===== CARDS ===== */
+
+.card{
+    background:#0f172a;
+    padding:25px;
+    border-radius:20px;
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 15px 35px rgba(0,0,0,.25);
+}
+
+.metric{
+    background:#111827;
+    padding:20px;
+    border-radius:16px;
+    text-align:center;
+}
+
+.metric h2{
+    color:#38bdf8;
+    font-size:38px;
+}
+
+.metric p{
+    color:#cbd5e1;
+}
+
+@media(max-width:900px){
+
+.login-wrapper{
+grid-template-columns:1fr;
+}
+
+.login-left{
+display:none;
+}
+
+.login-right{
+padding:35px;
+}
+
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# =========================================================
+# POSTGRESQL
 # =========================================================
 
 DATABASE_URL = st.secrets["DATABASE_URL"]
@@ -22,76 +174,93 @@ DATABASE_URL = st.secrets["DATABASE_URL"]
 engine = create_engine(DATABASE_URL)
 
 # =========================================================
-# CREAR TABLAS
+# TABLAS
 # =========================================================
 
 with engine.begin() as conn:
 
     conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS usuarios (
+    CREATE TABLE IF NOT EXISTS usuarios(
         id SERIAL PRIMARY KEY,
+        nombres TEXT,
         usuario TEXT UNIQUE,
         password TEXT,
-        fecha_inicio TIMESTAMP,
-        fecha_fin TIMESTAMP,
-        plan TEXT,
-        dias_restantes INTEGER
+        rol TEXT DEFAULT 'Docente',
+        fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     """))
 
     conn.execute(text("""
-    CREATE TABLE IF NOT EXISTS evaluaciones (
+    CREATE TABLE IF NOT EXISTS evaluaciones(
         id SERIAL PRIMARY KEY,
         estudiante TEXT,
         edad INTEGER,
         sexo TEXT,
         burpee INTEGER,
-        salto REAL,
-        flexibilidad REAL,
-        velocidad REAL,
-        fecha TIMESTAMP
+        salto INTEGER,
+        flexibilidad INTEGER,
+        velocidad INTEGER,
+        fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     """))
 
 # =========================================================
-# CSS
+# FUNCIONES
 # =========================================================
 
-st.markdown("""
-<style>
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
 
-.stApp{
-background: linear-gradient(135deg,#020617,#001233);
-color:white;
-}
+def registrar_usuario(nombres, usuario, password):
 
-section[data-testid="stSidebar"]{
-background:#111827;
-}
+    try:
 
-h1,h2,h3{
-color:#38bdf8;
-}
+        with engine.begin() as conn:
 
-.stButton>button{
-background:linear-gradient(90deg,#06b6d4,#9333ea);
-color:white;
-border:none;
-border-radius:10px;
-padding:10px;
-font-weight:bold;
-}
+            existe = conn.execute(text("""
+            SELECT * FROM usuarios
+            WHERE usuario=:u
+            """), {"u":usuario}).fetchone()
 
-.box{
-background:#111827;
-padding:20px;
-border-radius:15px;
-border:1px solid #334155;
-margin-bottom:20px;
-}
+            if existe:
+                return False, "Usuario ya existe"
 
-</style>
-""", unsafe_allow_html=True)
+            conn.execute(text("""
+            INSERT INTO usuarios(
+                nombres,
+                usuario,
+                password
+            )
+            VALUES(
+                :n,
+                :u,
+                :p
+            )
+            """),{
+                "n":nombres,
+                "u":usuario,
+                "p":hash_password(password)
+            })
+
+        return True, "Usuario registrado"
+
+    except Exception as e:
+        return False, str(e)
+
+def autenticar(usuario, password):
+
+    with engine.begin() as conn:
+
+        data = conn.execute(text("""
+        SELECT * FROM usuarios
+        WHERE usuario=:u
+        AND password=:p
+        """),{
+            "u":usuario,
+            "p":hash_password(password)
+        }).fetchone()
+
+        return data
 
 # =========================================================
 # SESSION
@@ -104,72 +273,88 @@ if "login" not in st.session_state:
 # LOGIN
 # =========================================================
 
-def login():
+def pantalla_login():
 
-    st.title("🏃 CAPACIDADES FÍSICAS PRO")
+    st.markdown("""
+    <div class="login-wrapper">
 
-    menu = st.tabs(["Ingresar","Registrarse"])
+        <div class="login-left">
 
+            <div>
+                <p>— Plataforma profesional educativa —</p>
+                <h1>Capacidades Físicas PRO</h1>
+            </div>
+
+            <div>
+                <p><b>Sistema cloud profesional</b></p>
+                <p>Evaluación física, estadísticas y gestión escolar avanzada.</p>
+            </div>
+
+        </div>
+
+        <div class="login-right">
+
+            <div class="brand">
+            Capacidades <span>PRO</span>
+            </div>
+
+            <div class="subtitle">
+            Ingrese para administrar evaluaciones físicas.
+            </div>
+
+    """, unsafe_allow_html=True)
+
+    tab1, tab2 = st.tabs(["Ingresar", "Registrarse"])
+
+    # =====================================================
     # LOGIN
-    with menu[0]:
+    # =====================================================
+
+    with tab1:
 
         usuario = st.text_input("Usuario")
         password = st.text_input("Contraseña", type="password")
 
-        if st.button("Ingresar"):
+        if st.button("Iniciar sesión"):
 
-            with engine.begin() as conn:
+            data = autenticar(usuario, password)
 
-                result = conn.execute(text("""
-                SELECT * FROM usuarios
-                WHERE usuario=:u AND password=:p
-                """), {
-                    "u":usuario,
-                    "p":password
-                }).fetchone()
-
-            if result:
+            if data:
 
                 st.session_state.login = True
-                st.session_state.usuario = usuario
+                st.session_state.usuario = data.usuario
+                st.session_state.nombres = data.nombres
+
                 st.rerun()
 
             else:
-                st.error("Usuario incorrecto")
+                st.error("Usuario o contraseña incorrecta")
 
-    # REGISTRO
-    with menu[1]:
+    # =====================================================
+    # REGISTER
+    # =====================================================
 
+    with tab2:
+
+        nombres = st.text_input("Nombres completos")
         nuevo_usuario = st.text_input("Nuevo usuario")
         nuevo_password = st.text_input("Nueva contraseña", type="password")
 
         if st.button("Crear cuenta"):
 
-            inicio = datetime.now()
-            fin = inicio + timedelta(days=15)
+            ok, msg = registrar_usuario(
+                nombres,
+                nuevo_usuario,
+                nuevo_password
+            )
 
-            try:
+            if ok:
+                st.success(msg)
 
-                with engine.begin() as conn:
+            else:
+                st.error(msg)
 
-                    conn.execute(text("""
-                    INSERT INTO usuarios
-                    (usuario,password,fecha_inicio,fecha_fin,plan,dias_restantes)
-                    VALUES
-                    (:u,:p,:i,:f,:pl,:d)
-                    """),{
-                        "u":nuevo_usuario,
-                        "p":nuevo_password,
-                        "i":inicio,
-                        "f":fin,
-                        "pl":"Prueba 15 días",
-                        "d":15
-                    })
-
-                st.success("Cuenta creada")
-
-            except:
-                st.error("Usuario ya existe")
+    st.markdown("</div></div>", unsafe_allow_html=True)
 
 # =========================================================
 # DASHBOARD
@@ -185,10 +370,14 @@ def dashboard():
             "Dashboard",
             "Registrar evaluación",
             "Resultados",
-            "Estadísticas",
-            "Suscripción"
+            "Estadísticas"
         ]
     )
+
+    if st.sidebar.button("Cerrar sesión"):
+
+        st.session_state.login = False
+        st.rerun()
 
     # =====================================================
     # DASHBOARD
@@ -196,7 +385,7 @@ def dashboard():
 
     if menu == "Dashboard":
 
-        st.title("📊 Dashboard")
+        st.title("🏃 CAPACIDADES FÍSICAS PRO")
 
         with engine.begin() as conn:
 
@@ -204,50 +393,93 @@ def dashboard():
             SELECT COUNT(*) FROM evaluaciones
             """)).scalar()
 
-        col1,col2,col3 = st.columns(3)
+            promedio = conn.execute(text("""
+            SELECT AVG(burpee)
+            FROM evaluaciones
+            """)).scalar()
 
-        col1.metric("Evaluaciones", total)
-        col2.metric("Usuarios", "Online")
-        col3.metric("Sistema", "Activo")
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.markdown(f"""
+            <div class="metric">
+            <h2>{total}</h2>
+            <p>Total evaluaciones</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col2:
+            st.markdown(f"""
+            <div class="metric">
+            <h2>{round(promedio or 0,2)}</h2>
+            <p>Promedio Burpee</p>
+            </div>
+            """, unsafe_allow_html=True)
 
     # =====================================================
-    # REGISTRO
+    # REGISTRAR
     # =====================================================
 
     elif menu == "Registrar evaluación":
 
-        st.title("📝 Registrar evaluación")
+        st.title("📋 Registrar evaluación")
 
-        estudiante = st.text_input("Estudiante")
-        edad = st.number_input("Edad",1,100)
-        sexo = st.selectbox("Sexo",["Masculino","Femenino"])
+        with st.form("evaluacion"):
 
-        burpee = st.number_input("Test Burpee")
-        salto = st.number_input("Salto Horizontal")
-        flexibilidad = st.number_input("Sit and Reach")
-        velocidad = st.number_input("Velocidad 5x10")
+            estudiante = st.text_input("Nombre del estudiante")
 
-        if st.button("Guardar evaluación"):
+            col1, col2 = st.columns(2)
 
-            with engine.begin() as conn:
+            with col1:
+                edad = st.number_input("Edad", 5, 100)
 
-                conn.execute(text("""
-                INSERT INTO evaluaciones
-                (estudiante,edad,sexo,burpee,salto,flexibilidad,velocidad,fecha)
-                VALUES
-                (:e,:ed,:s,:b,:sa,:f,:v,:fe)
-                """),{
-                    "e":estudiante,
-                    "ed":edad,
-                    "s":sexo,
-                    "b":burpee,
-                    "sa":salto,
-                    "f":flexibilidad,
-                    "v":velocidad,
-                    "fe":datetime.now()
-                })
+            with col2:
+                sexo = st.selectbox(
+                    "Sexo",
+                    ["Masculino", "Femenino"]
+                )
 
-            st.success("Evaluación guardada")
+            burpee = st.number_input("Burpee")
+            salto = st.number_input("Salto horizontal")
+            flexibilidad = st.number_input("Flexibilidad")
+            velocidad = st.number_input("Velocidad")
+
+            guardar = st.form_submit_button("Guardar evaluación")
+
+            if guardar:
+
+                with engine.begin() as conn:
+
+                    conn.execute(text("""
+                    INSERT INTO evaluaciones(
+                        estudiante,
+                        edad,
+                        sexo,
+                        burpee,
+                        salto,
+                        flexibilidad,
+                        velocidad
+                    )
+                    VALUES(
+                        :e,
+                        :edad,
+                        :sexo,
+                        :b,
+                        :s,
+                        :f,
+                        :v
+                    )
+                    """),{
+                        "e":estudiante,
+                        "edad":edad,
+                        "sexo":sexo,
+                        "b":burpee,
+                        "s":salto,
+                        "f":flexibilidad,
+                        "v":velocidad
+                    })
+
+                st.success("Evaluación guardada")
 
     # =====================================================
     # RESULTADOS
@@ -255,14 +487,13 @@ def dashboard():
 
     elif menu == "Resultados":
 
-        st.title("📋 Resultados")
+        st.title("📊 Resultados")
 
-        with engine.begin() as conn:
-
-            df = pd.read_sql("""
-            SELECT * FROM evaluaciones
-            ORDER BY id DESC
-            """, conn)
+        df = pd.read_sql("""
+        SELECT *
+        FROM evaluaciones
+        ORDER BY fecha DESC
+        """, engine)
 
         st.dataframe(df, use_container_width=True)
 
@@ -276,80 +507,48 @@ def dashboard():
         )
 
     # =====================================================
-    # ESTADISTICAS
+    # ESTADÍSTICAS
     # =====================================================
 
     elif menu == "Estadísticas":
 
         st.title("📈 Estadísticas")
 
-        with engine.begin() as conn:
+        df = pd.read_sql("""
+        SELECT *
+        FROM evaluaciones
+        """, engine)
 
-            df = pd.read_sql("""
-            SELECT * FROM evaluaciones
-            """, conn)
-
-        if not df.empty:
+        if len(df) > 0:
 
             fig = px.histogram(
                 df,
                 x="burpee",
-                title="Distribución Test Burpee"
+                color="sexo",
+                title="Distribución Burpee"
             )
 
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(
+                fig,
+                use_container_width=True
+            )
 
-    # =====================================================
-    # SUSCRIPCION
-    # =====================================================
+            fig2 = px.scatter(
+                df,
+                x="salto",
+                y="velocidad",
+                color="sexo",
+                size="edad",
+                title="Salto vs Velocidad"
+            )
 
-    elif menu == "Suscripción":
+            st.plotly_chart(
+                fig2,
+                use_container_width=True
+            )
 
-        st.title("💳 Planes")
-
-        col1,col2 = st.columns(2)
-
-        with col1:
-            st.markdown("""
-            <div class='box'>
-            <h2>Plan Mensual</h2>
-            <h1>S/ 35</h1>
-            <p>30 días</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        with col2:
-            st.markdown("""
-            <div class='box'>
-            <h2>Plan Anual</h2>
-            <h1>S/ 360</h1>
-            <p>365 días</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        metodo = st.radio(
-            "Método pago",
-            ["Yape","Tarjeta"]
-        )
-
-        st.text_input("Código operación")
-
-        st.file_uploader(
-            "Subir captura",
-            type=["png","jpg","jpeg"]
-        )
-
-        if st.button("Enviar pago"):
-            st.success("Pago enviado para validación")
-
-    # =====================================================
-    # LOGOUT
-    # =====================================================
-
-    if st.sidebar.button("Cerrar sesión"):
-
-        st.session_state.login = False
-        st.rerun()
+        else:
+            st.warning("No existen datos")
 
 # =========================================================
 # MAIN
@@ -358,4 +557,4 @@ def dashboard():
 if st.session_state.login:
     dashboard()
 else:
-    login()
+    pantalla_login()
