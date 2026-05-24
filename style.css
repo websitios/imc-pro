@@ -1,0 +1,75 @@
+body {
+    background: #020617;
+}
+
+.stApp {
+    background: linear-gradient(135deg,
+            #020617,
+            #001b44);
+    color: white;
+}
+
+/* LOGIN */
+
+.login-container {
+    display: flex;
+    min-height: 90vh;
+    border-radius: 25px;
+    overflow: hidden;
+    background: white;
+}
+
+.login-left {
+    width: 50%;
+    background: linear-gradient(135deg,
+            #1d4ed8,
+            #2563eb);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+}
+
+.overlay h1 {
+    font-size: 52px;
+    font-weight: 800;
+}
+
+.overlay p {
+    font-size: 20px;
+    opacity: 0.9;
+}
+
+.login-right {
+    width: 50%;
+    padding: 60px;
+    background: white;
+    color: black;
+}
+
+/* BOTONES */
+
+.stButton button {
+    background: linear-gradient(90deg,
+            #06b6d4,
+            #2563eb);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 25px;
+    font-weight: bold;
+}
+
+.stButton button:hover {
+    transform: scale(1.03);
+    transition: 0.3s;
+}
+
+/* INPUTS */
+
+.stTextInput input {
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    padding: 10px;
+}
