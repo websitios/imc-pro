@@ -1,213 +1,226 @@
 /* ==========================================================================
-   1. VARIABLES DE COLOR Y FUENTES (DISEÑO PREMIUM)
+   1. CONFIGURACIÓN E INMERSIÓN GLOBAL (RESETEO DE STREAMLIT)
    ========================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
+/* Forzar el fondo fluido de ondas líquidas (Azul, crema y oro) en toda la app */
 .stApp {
-    background: linear-gradient(135deg, #020617 0%, #070f22 50%, #0b1528 100%) !important;
-    color: #f8fafc !important;
+    background-color: #0b1d3a !important;
+    background-image:
+        radial-gradient(at 85% 15%, rgba(254, 240, 138, 0.45) 0px, transparent 45%),
+        radial-gradient(at 95% 65%, rgba(147, 197, 253, 0.5) 0px, transparent 50%),
+        radial-gradient(at 55% 40%, rgba(30, 58, 138, 0.8) 0px, transparent 60%),
+        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.4) 0px, transparent 40%),
+        linear-gradient(135deg, #070f22 0%, #1e3a8a 100%) !important;
+    background-attachment: fixed !important;
     font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
 }
 
-/* ==========================================================================
-   2. BARRA LATERAL (SIDEBAR INSTITUCIONAL)
-   ========================================================================== */
-section[data-testid="stSidebar"] {
-    background-color: #091124 !important;
-    border-right: 1px solid rgba(56, 189, 248, 0.08) !important;
-    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.25);
+/* Ocultar elementos superiores e inferiores nativos que rompen el diseño limpio */
+header[data-testid="stHeader"],
+footer,
+div[data-testid="stDecoration"] {
+    visibility: hidden !important;
+    display: none !important;
 }
 
-section[data-testid="stSidebar"] .stRadio>label {
-    color: #94a3b8 !important;
-    font-weight: 600 !important;
-}
-
-/* Encapsulado del estado del Docente en Sidebar */
-section[data-testid="stSidebar"] .stAlert {
-    background-color: rgba(6, 78, 59, 0.3) !important;
-    border: 1px solid rgba(52, 211, 153, 0.2) !important;
-    color: #34d399 !important;
-    border-radius: 12px !important;
+/* Ajustar los contenedores de bloques internos para permitir centrado vertical */
+div[data-testid="stVerticalBlock"] {
+    gap: 0px !important;
 }
 
 /* ==========================================================================
-   3. TARJETA DE LOGIN PROFESIONAL (CENTRADOR DE ACCESO)
+   2. TARJETA DE LOGIN (REPLICA FIEL IZQUIERDA DE LA IMAGEN)
    ========================================================================== */
 .login-card {
-    background: rgba(15, 23, 42, 0.65) !important;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    padding: 30px 40px 10px 40px;
-    border-radius: 24px;
-    border: 1px solid rgba(56, 189, 248, 0.15);
-    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+    background: #ffffff !important;
+    padding: 40px 45px 25px 45px;
+    border-radius: 24px !important;
+    box-shadow: 0 30px 70px -10px rgba(7, 15, 34, 0.55) !important;
     text-align: center;
-    margin-top: 40px;
-    margin-bottom: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    margin-top: 25px;
+}
+
+/* Avatar e ícono circular superior de la tarjeta */
+.login-card::before {
+    content: "👤";
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 76px;
+    height: 76px;
+    background-color: #f8fafc;
+    color: #1e3a8a;
+    border-radius: 50%;
+    margin: 0 auto 22px auto;
+    border: 2px solid #e2e8f0;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .login-card h1 {
-    font-size: 34px !important;
+    font-size: 26px !important;
     font-weight: 900 !important;
     letter-spacing: -0.05em !important;
-    color: #ffffff !important;
-    margin-bottom: 5px !important;
+    color: #0f172a !important;
+    margin: 0px 0px 4px 0px !important;
+    padding: 0px !important;
 }
 
 .login-card p {
-    color: #94a3b8 !important;
-    font-size: 14px !important;
+    color: #64748b !important;
+    font-size: 13.5px !important;
     font-weight: 400 !important;
+    margin: 0px 0px 15px 0px !important;
+    line-height: 1.4 !important;
 }
 
-/* Títulos internos de sección */
+/* Títulos decorativos de los formularios internos */
 h1,
 h2,
 h3 {
-    color: #38bdf8 !important;
-    font-weight: 900 !important;
+    color: #1e3a8a !important;
+    font-weight: 800 !important;
     letter-spacing: -0.03em !important;
 }
 
 /* ==========================================================================
-   4. COMPONENTES DE ENTRADA (FORMULARIOS PREMIUM)
+   3. CAMPOS DE ENTRADA (ESTILO "PÍLDORA" OVALADA)
    ========================================================================== */
-/* Inputs de texto, numéricos y selectores */
+/* Forzar diseño elíptico en cajas de texto de usuario y contraseña */
 .stTextInput input,
 .stNumberInput input,
 div[data-baseweb="select"] {
-    border-radius: 12px !important;
+    border-radius: 50px !important;
+    /* Bordes ovalados perfectos */
     height: 48px !important;
-    background-color: #0f172a !important;
-    color: #f8fafc !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    font-size: 15px !important;
-    transition: all 0.2s ease-in-out !important;
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    border: 1.5px solid #cbd5e1 !important;
+    font-size: 14.5px !important;
+    padding-left: 24px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-/* Efecto Focus del Input activo */
+/* Interacción al seleccionar o escribir en un campo (Focus) */
 .stTextInput input:focus,
 .stNumberInput input:focus {
-    border-color: #2563eb !important;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25) !important;
-    background-color: #111e36 !important;
+    border-color: #1e3a8a !important;
+    box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.12) !important;
+    background-color: #f8fafc !important;
 }
 
-/* Etiquetas de formulario */
-label aria-label,
-.stForm label {
-    color: #94a3b8 !important;
-    font-weight: 500 !important;
-    font-size: 14px !important;
-}
-
-/* Estructura interna de los formularios de evaluación */
-.stForm {
-    background: rgba(15, 23, 42, 0.4) !important;
-    border-radius: 20px !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
-    padding: 30px !important;
+/* Ajuste sutil de las etiquetas de texto de Streamlit */
+div[data-testid="stWidgetLabel"] p {
+    color: #475569 !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    margin-left: 14px !important;
+    margin-bottom: 4px !important;
 }
 
 /* ==========================================================================
-   5. SISTEMA DE BOTONES (PRIMARY, DOWNLOAD Y SECONDARY)
+   4. SISTEMA DE BOTONES (SÓLIDOS Y ENLACES)
    ========================================================================== */
-/* Botón Principal (Gradiente Vibrante para Ingresar/Guardar) */
+/* Botón de Acción Principal (El "LOGIN" de la imagen) */
 .stButton button {
-    background: linear-gradient(135deg, #2563eb 0%, #6d28d9 100%) !important;
+    background: #1e3a8a !important;
     color: #ffffff !important;
     border: none !important;
-    border-radius: 12px !important;
+    border-radius: 50px !important;
+    /* Estilo píldora */
     font-weight: 700 !important;
-    font-size: 15px !important;
-    height: 46px !important;
+    font-size: 14px !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
+    /* Todo en mayúsculas */
+    height: 48px !important;
     cursor: pointer !important;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2) !important;
+    transition: all 0.2s ease-in-out !important;
+    box-shadow: 0 4px 14px rgba(30, 58, 138, 0.3) !important;
 }
 
 .stButton button:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 12px 20px rgba(37, 99, 235, 0.35) !important;
-    filter: brightness(1.1) !important;
+    background: #0f172a !important;
+    /* Cambia a tono oscuro */
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.35) !important;
 }
 
 .stButton button:active {
-    transform: translateY(0px) !important;
+    transform: translateY(1px) !important;
 }
 
-/* Botón Secundario Alternador (Ej. Crear Cuenta / Volver) */
+/* Enlaces secundarios (Simulación del "Sign up now" / "¿No tienes cuenta?") */
 button[key^="btn_ir_"] {
-    background: rgba(30, 41, 59, 0.5) !important;
-    color: #cbd5e1 !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: transparent !important;
+    color: #1e3a8a !important;
+    border: none !important;
+    text-decoration: underline !important;
+    font-weight: 600 !important;
+    font-size: 13.5px !important;
     box-shadow: none !important;
+    height: auto !important;
+    padding: 0px !important;
+    text-transform: none !important;
 }
 
 button[key^="btn_ir_"]:hover {
-    background: rgba(30, 41, 59, 0.9) !important;
-    color: #ffffff !important;
-    border-color: rgba(56, 189, 248, 0.3) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Botón de Descarga de Datos (Resultados CSV en color Cian) */
-.stDownloadButton button {
-    background: linear-gradient(135deg, #06b6d4 0%, #0284c7 100%) !important;
-    color: #ffffff !important;
-    border: none !important;
-    border-radius: 12px !important;
-    font-weight: 700 !important;
-    font-size: 15px !important;
-    height: 48px !important;
-    transition: all 0.25s ease-in-out !important;
-    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2) !important;
-}
-
-.stDownloadButton button:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 12px 20px rgba(6, 182, 212, 0.35) !important;
+    color: #0f172a !important;
+    background: transparent !important;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 /* ==========================================================================
-   6. CONTENEDORES DE MÉTRICAS (DASHBOARD)
+   5. DISEÑO DEL DASHBOARD INTERNO (POST-LOGIN)
    ========================================================================== */
-[data-testid="stMetric"] {
-    background: rgba(15, 23, 42, 0.5) !important;
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(56, 189, 248, 0.15) !important;
-    padding: 22px 20px !important;
-    border-radius: 20px !important;
-    box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.3) !important;
-    transition: transform 0.2s ease-in-out !important;
+/* Cuando el docente accede, los componentes se adaptan para mantener legibilidad clara */
+section[data-testid="stSidebar"] {
+    background-color: #0c1527 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
-[data-testid="stMetric"]:hover {
-    transform: translateY(-3px) !important;
-    border-color: rgba(56, 189, 248, 0.3) !important;
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] p,
+section[data-testid="stSidebar"] label {
+    color: #f8fafc !important;
+}
+
+/* Tarjetas de métricas claras y limpias para los promedios físicos */
+[data-testid="stMetric"] {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 18px !important;
+    padding: 20px !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05) !important;
 }
 
 [data-testid="stMetricLabel"] {
-    color: #94a3b8 !important;
+    color: #64748b !important;
     font-weight: 600 !important;
-    font-size: 13px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.05em !important;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
 [data-testid="stMetricValue"] {
-    color: #ffffff !important;
+    color: #0f172a !important;
     font-weight: 800 !important;
-    font-size: 28px !important;
-    letter-spacing: -0.02em !important;
 }
 
-/* ==========================================================================
-   7. TABLAS DE DATOS (DATAFRAMES NEUTROS Y LIMPIOS)
-   ========================================================================== */
+/* Contenedor de formularios de evaluaciones */
+.stForm {
+    background: #ffffff !important;
+    border-radius: 24px !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 35px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Dataframe e Historial de Resultados */
 div[data-testid="stDataFrame"] {
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
     border-radius: 16px !important;
-    overflow: hidden !important;
+    border: 1px solid #e2e8f0 !important;
+    background-color: #ffffff !important;
 }
